@@ -2,6 +2,8 @@
 
 ***THIS IS NOT FINISHED!!!! YOU MAY USE IT BUT STUFF MAY BE BROKEN***
 
+<hr>
+
 Adds a developer testing menu (F8 on the title screen, *MUST HAVE DEVELOPER MODE ON IN PROJECT.XML*)
 
 Cleaner folder layout.
