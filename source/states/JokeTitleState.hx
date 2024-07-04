@@ -1,18 +1,8 @@
 package states;
 
-import hxcodec.flixel.FlxVideo;
-import openfl.ui.Keyboard;
+import hxvlc.flixel.FlxVideoSprite;
 import openfl.events.KeyboardEvent;
-import openfl.display.BitmapData;
-// #if (hxCodec >= "3.0.0")
-// import hxcodec.flixel.FlxVideo as VideoHandler;
-// #elseif (hxCodec >= "2.6.1")
-// import hxcodec.VideoHandler as VideoHandler;
-// #elseif (hxCodec == "2.6.0")
-// import VideoHandler;
-// #else
-// import vlc.MP4Handler as VideoHandler;
-// #end
+import openfl.ui.Keyboard;
 import flixel.input.keyboard.FlxKey;
 
 class JokeTitleState extends MusicBeatState {
@@ -20,7 +10,7 @@ class JokeTitleState extends MusicBeatState {
 	public static var volumeDownKeys:Array<FlxKey> = [FlxKey.NUMPADMINUS, FlxKey.MINUS];
 	public static var volumeUpKeys:Array<FlxKey> = [FlxKey.NUMPADPLUS, FlxKey.PLUS];
 
-	var video:FlxVideo;
+	var video:FlxVideoSprite;
 
 	override function create() {
 		Paths.clearStoredMemory();
@@ -49,15 +39,29 @@ class JokeTitleState extends MusicBeatState {
 	}
 
 	public function startVideo(name:String) {
-		video = new FlxVideo();
-		video.play(Paths.devAsset('$name.mp4'));
-		video.onEndReached.add(finishVideo);
+		video = new FlxVideoSprite(0, 0);
+
+		video.bitmap.onFormatSetup.add(function() {
+			video.setGraphicSize(FlxG.width, FlxG.height);
+			video.updateHitbox();
+			video.screenCenter();
+		});
+
+		video.bitmap.onEndReached.add(function() {
+			finishVideo();
+		});
+
+		video.antialiasing = true;
+		video.load(Paths.devAsset(name + '.mp4'));
+		add(video);
+
+		video.play();
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 	}
 
 	public function finishVideo() {
-		video.dispose();
+		video.destroy();
 
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
