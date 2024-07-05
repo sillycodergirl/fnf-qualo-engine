@@ -1,7 +1,5 @@
 package states;
 
-import debug.FPSCounter;
-import hxcodec.flixel.FlxVideo;
 import backend.AssetManager;
 import backend.Conductor;
 
@@ -11,7 +9,7 @@ class DevOptions extends MusicBeatState {
 	var title:Alphabet;
 
 	var optionsStuff:FlxTypedGroup<Alphabet>;
-	var stuffToDo:Array<String> = ['Reset Assets', 'Flx Video Test'];
+	var stuffToDo:Array<String> = ['Reset Assets'];
 
 	var specShit:FlxText;
 
@@ -94,15 +92,6 @@ class DevOptions extends MusicBeatState {
 		switch (stuffToDo[curSelected]) {
 			case 'Reset Assets':
 				AssetManager.reloadSourceAssets(function() {
-					canSelect = true;
-				});
-			case 'Flx Video Test':
-				FlxG.sound.music.fadeOut(0.2, 0);
-				var flxvid:FlxVideo = new FlxVideo();
-				flxvid.play(Paths.devAsset('bunny.mp4'));
-				flxvid.onEndReached.add(function() {
-					flxvid.dispose();
-					FlxG.sound.music.fadeIn(0.5, 0, 0.7);
 					canSelect = true;
 				});
 			default:
