@@ -57,6 +57,6 @@ After installing the needed libraries, just open up the terminal and type either
 
 ## Contact
 If you have any issues with the fork, please make an issue.
-If you have any requests, please comment it on the official request issue.
+If you have any requests, please comment it on the [official request issue](https://github.com/sillycodergirl/fnf-qualo-engine/issues/1).
 
 Fork by [Alice (@sillycodergirl)](https://twitter.com/sillycodergirl)
