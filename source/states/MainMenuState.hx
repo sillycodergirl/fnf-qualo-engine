@@ -6,6 +6,7 @@ import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
+import Sys;
 
 class MainMenuState extends MusicBeatState {
 	public static var psychEngineVersion:String = '0.7.3'; // This is also used for Discord RPC
@@ -76,7 +77,19 @@ class MainMenuState extends MusicBeatState {
 			menuItem.screenCenter(X);
 		}
 
-		var psychVer:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
+		var baseText:String = "QualO Engine";
+		#if DEVELOPMENT_BUILD
+		var proc = new Process('powershell', ['git rev-list --count --all']);
+		var gitCommit:String = proc.stdout.readAll().toString().trim();
+		proc.close();
+
+		if (gitCommit != null && gitCommit != '') {
+			baseText += ' (DEV BUILD: LOCAL COMMIT #$gitCommit)';
+		} else {
+			baseText += ' (DEV BUILD)';
+		}
+		#end
+		var psychVer:FlxText = new FlxText(12, FlxG.height - 44, 0, baseText, 12);
 		psychVer.scrollFactor.set();
 		psychVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(psychVer);
