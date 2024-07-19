@@ -809,11 +809,18 @@ class PlayState extends MusicBeatState {
 	public function startVideo(name:String) {
 		#if VIDEOS_ALLOWED
 		var video = new FlxVideoSprite();
+		video.cameras = [camOther];
 		video.load(Paths.video(name));
+		video.bitmap.onFormatSetup.add(function() {
+			video.setGraphicSize(FlxG.width, FlxG.height);
+			video.updateHitbox();
+			video.screenCenter();
+		});
 		video.bitmap.onEndReached.add(function() {
 			video.destroy();
 			startAndEnd();
 		});
+		add(video);
 		video.play();
 		#else
 		FlxG.log.warn('Platform not supported!');
