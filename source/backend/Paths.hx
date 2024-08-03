@@ -295,14 +295,6 @@ class Paths {
 		return 'assets/fonts/$key';
 	}
 
-	static public function devAsset(key:String) {
-		#if DEVELOPMENT_BUILD
-		return 'assets/developer_mode/$key';
-		#else
-		FlxG.log.warn('WUH OH! NOT A DEVELOPMENT BUILD ACCESSING A DEV ASSET!');
-		#end
-	}
-
 	public static function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String = null) {
 		#if MODS_ALLOWED
 		if (!ignoreMods) {

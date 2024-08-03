@@ -25,7 +25,14 @@
 	<define name="DISCORD_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android" unless="32bits"/>
 
-	<define name="DEVELOPMENT_BUILD"/>
+
+	<!-- Ok so, for now what this does:
+	- Hides Discord RPC with a funny message
+	- Can access dev menu from main menu using F8 
+	
+	UNCOMMENT THE LINE BELOW TO TURN THIS ON.-->
+
+	<!-- <define name="DEVELOPMENT_BUILD"/> -->
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -66,7 +73,6 @@
 	<assets path="assets/sounds" exclude="*.mp3" unless="web"/>
 	<assets path="assets/stages"/>
 	<assets path="assets/weeks"/>
-	<assets path="assets/developer_mode" if='DEVELOPMENT_BUILD'/>
 
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 	<assets path="assets/songs"         library="songs"         exclude="*.ogg" if="web"/>

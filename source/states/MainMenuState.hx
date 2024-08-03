@@ -78,17 +78,18 @@ class MainMenuState extends MusicBeatState {
 		}
 
 		var baseText:String = "QualO Engine";
-		#if DEVELOPMENT_BUILD
 		var proc = new Process('powershell', ['git rev-list --count --all']);
 		var gitCommit:String = proc.stdout.readAll().toString().trim();
 		proc.close();
 
-		if (gitCommit != null && gitCommit != '') {
-			baseText += ' (DEV BUILD: LOCAL COMMIT #$gitCommit)';
-		} else {
-			baseText += ' (DEV BUILD)';
-		}
+		#if DEVELOPMENT_BUILD
+		baseText += ' | DEV BUILD'
 		#end
+
+		if (gitCommit != null && gitCommit != '') {
+			baseText += ' | LOCAL COMMIT: $gitCommit';
+		}
+
 		var psychVer:FlxText = new FlxText(12, FlxG.height - 44, 0, baseText, 12);
 		psychVer.scrollFactor.set();
 		psychVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

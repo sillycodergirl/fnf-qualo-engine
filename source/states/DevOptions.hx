@@ -18,7 +18,7 @@ class DevOptions extends MusicBeatState {
 
 	override function create() {
 		Conductor.bpm = 125;
-		FlxG.sound.playMusic(Paths.devAsset('devMenu.ogg'), 0.7);
+		FlxG.sound.playMusic(Paths.music('devMenu.ogg'), 0.7);
 
 		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.WHITE);
 		add(bg);
