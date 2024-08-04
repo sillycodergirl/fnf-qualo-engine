@@ -83,7 +83,7 @@ class MainMenuState extends MusicBeatState {
 		proc.close();
 
 		#if DEVELOPMENT_BUILD
-		baseText += ' | DEV BUILD'
+		baseText += ' | DEV BUILD';
 		#end
 
 		if (gitCommit != null && gitCommit != '') {
