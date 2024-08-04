@@ -1,5 +1,11 @@
 package;
 
+import flixel.addons.transition.FlxTransitionableState;
+import states.ErrorState;
+import haxe.Exception;
+import states.StoryMenuState;
+import states.MainMenuState;
+import states.FreeplayState;
 #if android
 import android.content.Context;
 #end
@@ -18,12 +24,7 @@ import states.TitleState;
 #if linux
 import lime.graphics.Image;
 #end
-// crash handler stuff
-#if CRASH_HANDLER
-import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
-import haxe.io.Path;
-#end
 
 #if linux
 @:cppInclude('./external/gamemode_client.h')
@@ -91,7 +92,7 @@ class Main extends Sprite {
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
-		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
+		addChild(new MainGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
 			game.skipSplash, game.startFullscreen));
 
 		#if !mobile
@@ -112,10 +113,6 @@ class Main extends Sprite {
 		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
-		#end
-
-		#if CRASH_HANDLER
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
 
 		#if DISCORD_ALLOWED
@@ -142,47 +139,134 @@ class Main extends Sprite {
 			sprite.__cacheBitmapData = null;
 		}
 	}
+}
 
-	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
-	// very cool person for real they don't get enough credit for their work
-	#if CRASH_HANDLER
-	function onCrash(e:UncaughtErrorEvent):Void {
-		var errMsg:String = "";
-		var path:String;
-		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+class MainGame extends FlxGame {
+	var fuckedUpTitle:Bool = false; // this is for the crash handler shit
+
+	private static function KILLYOURSELFNOW() {
+		null
+		.draw();
+	}
+
+	override function create(_):Void {
+		try
+			super.create(_)
+		catch (e)
+			onCrash(e);
+	}
+
+	override function onFocus(_):Void {
+		try
+			super.onFocus(_)
+		catch (e)
+			onCrash(e);
+	}
+
+	override function onFocusLost(_):Void {
+		try
+			super.onFocusLost(_)
+		catch (e)
+			onCrash(e);
+	}
+
+	override function onEnterFrame(_):Void {
+		try
+			super.onEnterFrame(_)
+		catch (e)
+			onCrash(e);
+	}
+
+	override function draw():Void {
+		try
+			super.draw()
+		catch (e)
+			onCrash(e);
+	}
+
+	override function update():Void {
+		#if CRASH_HANDLER
+		if (FlxG.keys.justPressed.F9)
+			KILLYOURSELFNOW();
+		#end
+		try
+			super.update()
+		catch (e)
+			onCrash(e);
+	}
+
+	function onCrash(e:Exception):Void {
+		var errMSG:String = '';
+
 		var dateNow:String = Date.now().toString();
 
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+
+		var callList:String = '';
 
 		for (stackItem in callStack) {
 			switch (stackItem) {
 				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
+					callList += file + ' (line $line)\n';
 				default:
 					Sys.println(stackItem);
 			}
 		}
 
-		errMsg += "\nUncaught Error: "
-			+ e.error
-			+ "\nPlease report this error to the GitHub page: https://github.com/sillycodergirl/fnf-qualo-engine\n\n> Crash Handler written by: sqirra-rng";
+		var err = e.message;
 
-		if (!FileSystem.exists("./crash/"))
-			FileSystem.createDirectory("./crash/");
+		errMSG += 'Uh oh! An uncaught exception has occured.\n
+		Error: $err\n
+		Callstack:\n
+		$callList';
 
-		File.saveContent(path, errMsg + "\n");
+		FlxTransitionableState.skipNextTransOut = true;
+		FlxTransitionableState.skipNextTransIn = true;
 
-		Sys.println(errMsg);
-		Sys.println("Crash dump saved in " + Path.normalize(path));
+		var revertState = getRevertState();
 
-		Application.current.window.alert(errMsg, "Error!");
-		#if DISCORD_ALLOWED
-		DiscordClient.shutdown();
-		#end
-		Sys.exit(1);
+		MusicBeatState.switchState(new ErrorState(revertState, errMSG));
 	}
-	#end
+
+	function getRevertState():Class<FlxState> {
+		var currentState = Type.getClassName(Type.getClass(FlxG.state));
+
+		currentState = currentState.replace('states.', ''); // clean it up bc erm it does that.
+
+		switch (currentState) {
+			case 'FreeplayState', 'DevOptions', 'CreditsState', 'ModsMenuState', 'StoryMenuState', 'AchievementsMenuState', 'OptionsState', 'OutdatedState',
+				'FlashingState':
+				return MainMenuState;
+			case 'PlayState':
+				if (PlayState.isStoryMode) { // will this work if the current state is crashing? idfk
+					return StoryMenuState;
+				} else {
+					return FreeplayState;
+				}
+
+			case 'MainMenuState':
+				if (fuckedUpTitle) {
+					trace('ay mane, your title is fucked up. we can\'t revert yo shit.');
+					Sys.exit(1);
+					return null;
+				}
+				return TitleState;
+
+			case 'TitleState':
+				fuckedUpTitle = true;
+				return MainMenuState;
+
+			default:
+				if (fuckedUpTitle) {
+					trace('ay mane, your title is fucked up. we can\'t revert yo shit.');
+					Sys.exit(1);
+					return null;
+				} else {
+					return TitleState;
+				}
+		}
+	}
 }
