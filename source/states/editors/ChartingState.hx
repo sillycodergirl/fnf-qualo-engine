@@ -234,7 +234,7 @@ class ChartingState extends MusicBeatState {
 		waveformSprite = new FlxSprite(GRID_SIZE, 0).makeGraphic(1, 1, 0x00FFFFFF);
 		add(waveformSprite);
 
-		var eventIcon:FlxSprite = new FlxSprite(-GRID_SIZE - 5, -90).loadGraphic(Paths.image('eventArrow'));
+		var eventIcon:FlxSprite = new FlxSprite(-GRID_SIZE - 5, -90).loadGraphic(Paths.image('charting/eventArrow'));
 		eventIcon.antialiasing = ClientPrefs.data.antialiasing;
 		leftIcon = new HealthIcon('bf');
 		rightIcon = new HealthIcon('dad');
@@ -941,6 +941,10 @@ class ChartingState extends MusicBeatState {
 		for (mod in Mods.getGlobalMods())
 			directories.push(Paths.mods(mod + '/custom_events/'));
 		#end
+
+		directories.push('assets/custom_events');
+
+		trace(directories);
 
 		for (i in 0...directories.length) {
 			var directory:String = directories[i];

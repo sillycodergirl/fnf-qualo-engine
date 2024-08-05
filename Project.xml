@@ -67,6 +67,8 @@
 	<!-- Assets -->
 	<assets path="assets/fonts" />
 	<assets path="assets/data"/>
+	<assets path="assets/custom_events"/>
+	<assets path="assets/custom_notes"/>
 	<assets path="assets/characters"/>
 	<assets path="assets/images"/>
 	<assets path="assets/music" exclude="*.mp3" unless="web"/>

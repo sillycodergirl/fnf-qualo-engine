@@ -3072,15 +3072,17 @@ class PlayState extends MusicBeatState {
 
 	#if LUA_ALLOWED
 	public function startLuasNamed(luaFile:String) {
-		#if MODS_ALLOWED
-		var luaToLoad:String = Paths.modFolders(luaFile);
-		if (!FileSystem.exists(luaToLoad))
-			luaToLoad = Paths.getSharedPath(luaFile);
+		// dear shadowmario, i appriciate what you do as a programmer myself.
+		// But, I have to ask you one tiny question.
+		//
+		// WHY THE FUCK DO YOU USE THE FUNCTION ONLY FOR CUSTOM NOTES AND EVENTS AND NOT ANYTHING ELSE.
+		// YOU USE FILESYSTEM FOR GLOBALS AND OTHER THINGS OF THE NATURE SO TELL ME SHADOW 'BRAZILIAN' MARIO. TELL ME NOW.
+		//
+		// With warm loving regards, Alice.
 
-		if (FileSystem.exists(luaToLoad))
-		#elseif sys
+		#if sys
 		var luaToLoad:String = Paths.getSharedPath(luaFile);
-		if (OpenFlAssets.exists(luaToLoad))
+		if (FileSystem.exists('assets/' + luaFile))
 		#end
 		{
 			for (script in luaArray)
@@ -3096,13 +3098,7 @@ class PlayState extends MusicBeatState {
 
 	#if HSCRIPT_ALLOWED
 	public function startHScriptsNamed(scriptFile:String) {
-		#if MODS_ALLOWED
-		var scriptToLoad:String = Paths.modFolders(scriptFile);
-		if (!FileSystem.exists(scriptToLoad))
-			scriptToLoad = Paths.getSharedPath(scriptFile);
-		#else
 		var scriptToLoad:String = Paths.getSharedPath(scriptFile);
-		#end
 
 		if (FileSystem.exists(scriptToLoad)) {
 			if (SScript.global.exists(scriptToLoad))
