@@ -1482,7 +1482,9 @@ class PlayState extends MusicBeatState {
 			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
 				twn.active = false);
 
-            currentVideo.pause();
+            if (currentVideo != null) {
+				currentVideo.pause();
+			}
 		}
 
 		super.openSubState(SubState);
@@ -1501,7 +1503,9 @@ class PlayState extends MusicBeatState {
 			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
 				twn.active = true);
 
-            currentVideo.resume();
+            if (currentVideo != null) {
+				currentVideo.resume();
+			}
 
 			paused = false;
 			callOnScripts('onResume');
