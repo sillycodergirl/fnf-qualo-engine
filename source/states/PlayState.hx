@@ -264,6 +264,8 @@ class PlayState extends MusicBeatState {
 	public var startCallback:Void->Void = null;
 	public var endCallback:Void->Void = null;
 
+    public var currentVideo:FlxVideoSprite;
+
 	override public function create() {
 		// trace('Playback Rate: ' + playbackRate);
 		Paths.clearStoredMemory();
@@ -818,10 +820,12 @@ class PlayState extends MusicBeatState {
 		});
 		video.bitmap.onEndReached.add(function() {
 			video.destroy();
+            currentVideo = null;
 			startAndEnd();
 		});
 		add(video);
 		video.play();
+        currentVideo = video;
 		#else
 		FlxG.log.warn('Platform not supported!');
 		startAndEnd();
@@ -1477,6 +1481,8 @@ class PlayState extends MusicBeatState {
 				tmr.active = false);
 			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
 				twn.active = false);
+
+            currentVideo.pause();
 		}
 
 		super.openSubState(SubState);
@@ -1494,6 +1500,8 @@ class PlayState extends MusicBeatState {
 				tmr.active = true);
 			FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
 				twn.active = true);
+
+            currentVideo.resume();
 
 			paused = false;
 			callOnScripts('onResume');
