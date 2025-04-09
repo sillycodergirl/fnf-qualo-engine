@@ -3415,11 +3415,11 @@ class PlayState extends MusicBeatState {
 	#if (!flash && sys)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
 
-	public function createRuntimeShader(name:String):FlxRuntimeShader {
+	public function createRuntimeShader(name:String, ?recursive:Bool = false):FlxRuntimeShader {
 		if (!ClientPrefs.data.shaders)
 			return new FlxRuntimeShader();
 
-		#if (!flash && MODS_ALLOWED && sys)
+		#if (!flash && sys)
 		if (!runtimeShaders.exists(name) && !initLuaShader(name)) {
 			FlxG.log.warn('Shader $name is missing!');
 			return new FlxRuntimeShader();
@@ -3434,37 +3434,39 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function initLuaShader(name:String, ?glslVersion:Int = 120) {
+		trace("init shader of: " + name);
 		if (!ClientPrefs.data.shaders)
 			return false;
 
-		#if (MODS_ALLOWED && !flash && sys)
+		#if (!flash && sys)
 		if (runtimeShaders.exists(name)) {
 			FlxG.log.warn('Shader $name was already initialized!');
 			return true;
 		}
 
-		for (folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'shaders/')) {
-			var frag:String = folder + name + '.frag';
-			var vert:String = folder + name + '.vert';
-			var found:Bool = false;
-			if (FileSystem.exists(frag)) {
-				frag = File.getContent(frag);
-				found = true;
-			} else
-				frag = null;
+		var folder = 'assets/shaders/';
 
-			if (FileSystem.exists(vert)) {
-				vert = File.getContent(vert);
-				found = true;
-			} else
-				vert = null;
+		var frag:String = folder + name + '.frag';
+		var vert:String = folder + name + '.vert';
+		var found:Bool = false;
+		if (FileSystem.exists(frag)) {
+			frag = File.getContent(frag);
+			found = true;
+		} else
+			frag = null;
 
-			if (found) {
-				runtimeShaders.set(name, [frag, vert]);
-				// trace('Found shader $name!');
-				return true;
-			}
+		if (FileSystem.exists(vert)) {
+			vert = File.getContent(vert);
+			found = true;
+		} else
+			vert = null;
+
+		if (found) {
+			runtimeShaders.set(name, [frag, vert]);
+			trace('Found shader $name!');
+			return true;
 		}
+
 		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
 		addTextToDebug('Missing shader $name .frag AND .vert files!', FlxColor.RED);
 		#else
@@ -3476,4 +3478,5 @@ class PlayState extends MusicBeatState {
 		return false;
 	}
 	#end
+}
 }
