@@ -26,13 +26,15 @@ class HealthIcon extends FlxSprite {
 
 	public function changeIcon(char:String, ?allowGPU:Bool = true) {
 		if (this.char != char) {
-			var name:String = 'gameplay_UI/icons/' + char;
-			if (!Paths.fileExists('images/gameplay_UI/icons/' + name + '.png', IMAGE))
-				name = 'icons/icon-' + char; // Older versions of psych engine's support
-			if (!Paths.fileExists('images/gameplay_UI/icons/' + name + '.png', IMAGE))
-				name = 'gameplay_UI/icons/icon-face'; // Prevents crash from missing icon
+			var name:String = char;
 
-			var graphic = Paths.image(name, allowGPU);
+			if (!FileSystem.exists('assets/images/gameplay_UI/icons/' + name + '.png'))
+				name = 'icon-' + char; // Older versions of psych engine's support
+
+			if (!FileSystem.exists('assets/images/gameplay_UI/icons/' + name + '.png'))
+				name = 'icon-face'; // Prevents crash from missing icon
+
+			var graphic = Paths.image('gameplay_UI/icons/$name', allowGPU);
 			loadGraphic(graphic, true, Math.floor(graphic.width / 2), Math.floor(graphic.height));
 			iconOffsets[0] = (width - 150) / 2;
 			iconOffsets[1] = (height - 150) / 2;
